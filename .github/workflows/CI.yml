@@ -87,12 +87,6 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: 'true'
           manylinux: auto
-      - name: Build wheels - musllinux
-        uses: PyO3/maturin-action@v1
-        with:
-          target: ${{ matrix.platform.target }}
-          args: --release --out dist --find-interpreter
-          manylinux: musllinux_1_1
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
