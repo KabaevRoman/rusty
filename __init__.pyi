@@ -5,19 +5,8 @@
 #     is_tree: bool,
 # ) -> Vec<PythonInstance> {
 from typing import Any
-from rusty.types import CaseSearchQueryParams as CSQP, Prefetch as P, DataSetObject as DSO
 
-
-class CaseSearchQueryParams(CSQP):
-    """"""
-
-
-class Prefetch(P):
-    """"""
-
-
-class DataSetObject(DSO):
-    """"""
+from rusty.types import DataSetObject, CaseSearchQueryParams, Prefetch
 
 
 def serialize_tree(
@@ -34,7 +23,7 @@ def serialize_tree(
         is_tree: boolean flag to build main data set as tree.
 
     Returns:
-        _description_
+        list of dictionaries ready to be given to final user.
     """
 
 
