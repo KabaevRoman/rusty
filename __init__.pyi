@@ -1,9 +1,3 @@
-# pub fn serialize_tree(
-#     py: Python,
-#     tree_object: TreeObject,
-#     prefetch_objects: Vec<Prefetch>,
-#     is_tree: bool,
-# ) -> Vec<PythonInstance> {
 from typing import Any
 
 from rusty.types import DataSetObject, CaseSearchQueryParams, Prefetch
