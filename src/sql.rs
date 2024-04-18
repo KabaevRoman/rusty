@@ -28,15 +28,7 @@ struct Parent {
 #[derive(Clone, Serialize)]
 struct TestSuite {
     id: i64,
-    name: String,
-    project: i64,
-    description: Option<String>,
     parent_id: Option<i64>,
-    descendant_count: f64,
-    cases_count: Option<i64>,
-    total_cases_count: Option<i64>,
-    estimates: Option<i64>,
-    total_estimates: Option<i64>,
     title: String,
     children: Vec<TestSuite>,
     parent: Option<Parent>,
@@ -96,15 +88,7 @@ pub fn cases_search(query_params: CaseSearchQueryParams) -> PyResult<String> {
         let parent_id = row.get("parent_id");
         let suite = TestSuite {
             id: id,
-            name: row.get("name"),
-            project: row.get("project_id"),
-            description: row.get("description"),
             parent_id: parent_id,
-            descendant_count: row.get("descendant_count"),
-            cases_count: row.get("cases_count"),
-            total_cases_count: row.get("total_cases_count"),
-            estimates: row.get("estimates"),
-            total_estimates: row.get("total_estimates"),
             title: row.get("title"),
             children: vec![],
             parent: None,
@@ -139,7 +123,7 @@ pub fn cases_search(query_params: CaseSearchQueryParams) -> PyResult<String> {
                 let mut borrowed_parent = parent.borrow_mut();
                 borrowed_node.object.parent = Option::from(Parent {
                     id: borrowed_parent.id,
-                    name: borrowed_parent.object.name.clone(),
+                    name: borrowed_parent.object.title.clone(),
                 });
                 borrowed_parent.children.push(Rc::clone(node));
             }

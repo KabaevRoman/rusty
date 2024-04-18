@@ -1,6 +1,6 @@
 from .constants import *
-from .types import *
 from .rusty import *
+from .types import *
 
 __all__ = (
     "CASES_SEARCH_SUITE_FIELDS",
@@ -8,4 +8,6 @@ __all__ = (
     "CaseSearchQueryParams",
     "Prefetch",
     "DataSetObject",
+    "serialize_tree",
+    "cases_search",
 )
