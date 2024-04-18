@@ -108,13 +108,10 @@ pub fn serialize_tree(
         }
         dict_map.insert(dict.id, Rc::new(RefCell::new(dict)));
     }
-    println!("Mapped all things");
     add_related_objects(py, prefetch_objects, &mut dict_map);
     if !is_tree {
-        println!("Entered not tree");
         return dict_map.values().map(|obj| obj.borrow().clone()).collect();
     }
-    println!("Is tree!");
     for dict in dict_map.values() {
         let borrowed_dict = dict.borrow();
         if let Some(parent_id) = borrowed_dict.parent_id {
