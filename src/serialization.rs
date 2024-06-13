@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap, rc::Rc};
 
 use pyo3::{pyfunction, types::PyDict, FromPyObject, IntoPy, PyAny, PyObject, PyResult, Python};
 
@@ -10,7 +10,7 @@ pub struct PythonInstance {
     parent_id: Option<u32>,
     dict: PyObject,
     children: Vec<PythonInstanceRef>,
-    related_objects: HashMap<String, Vec<PyObject>>,
+    related_objects: BTreeMap<String, Vec<PyObject>>,
 }
 
 #[derive(Clone, Debug, FromPyObject)]
@@ -57,7 +57,7 @@ impl<'source> FromPyObject<'source> for TreeObject {
                 id,
                 dict: py_instance,
                 parent_id,
-                related_objects: HashMap::new(),
+                related_objects: BTreeMap::new(),
                 children: Vec::new(),
             });
         }
@@ -99,7 +99,7 @@ pub fn serialize_tree(
     prefetch_objects: Vec<Prefetch>,
     is_tree: bool,
 ) -> Vec<PythonInstance> {
-    let mut dict_map = HashMap::new();
+    let mut dict_map = BTreeMap::new();
     let mut root_refs: Vec<PythonInstanceRef> = Vec::new();
     for mut dict in data_set_object.instances {
         for prefetch_object in &prefetch_objects {
@@ -152,7 +152,7 @@ pub fn serialize_tree(
 fn add_related_objects(
     py: Python,
     prefetch_objects: Vec<Prefetch>,
-    dict_map: &mut HashMap<u32, PythonInstanceRef>,
+    dict_map: &mut BTreeMap<u32, PythonInstanceRef>,
 ) {
     for prefetch_object in prefetch_objects {
         for instance in prefetch_object.instances {
