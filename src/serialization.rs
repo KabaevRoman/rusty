@@ -40,10 +40,17 @@ impl<'source> FromPyObject<'source> for TreeObject {
             .expect("Could not_get pk key from python object")
             .extract()?;
         let mut instances = Vec::new();
-        let py_instances: Vec<PyObject> = obj.getattr("instances").unwrap().extract()?;
+        let py_instances: Vec<PyObject> = obj
+            .getattr("instances")
+            .unwrap()
+            .extract()?;
         for py_instance in py_instances {
             let py_dict = py_instance.downcast::<PyDict>(obj.py())?;
-            let id = py_dict.get_item(&pk_key).unwrap().unwrap().extract()?;
+            let id = py_dict
+                .get_item(&pk_key)
+                .unwrap()
+                .unwrap()
+                .extract()?;
             let mut parent_id = None;
             if let Some(parent_id_from_py) = py_dict
                 .get_item(&parent_key)
