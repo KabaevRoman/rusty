@@ -2,7 +2,7 @@ use postgres::{Client, NoTls};
 use pyo3::{pyfunction, FromPyObject, PyResult};
 use serde::Serialize;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{BTreeMap};
 use std::rc::Rc;
 
 type NodeRef = Rc<RefCell<Node>>;
@@ -40,6 +40,7 @@ struct TestCase {
     id: i64,
     name: String,
     suite_id: i64,
+    labels: Vec<String>,
 }
 
 #[derive(FromPyObject)]
@@ -78,17 +79,16 @@ pub fn cases_search(query_params: CaseSearchQueryParams) -> PyResult<String> {
         NoTls,
     )
         .expect("Could not establish connection with database");
-    let mut suite_map: HashMap<i64, NodeRef> = HashMap::new();
+    let mut suite_map: BTreeMap<i64, NodeRef> = BTreeMap::new();
     let mut root_refs = Vec::new();
-    for row in client
-        .query(&query_params.suites_query, &[])
-        .expect("Error occurred in suites query")
-    {
+    let case_rows = client.query(&query_params.suites_query, &[])
+        .expect("Error occurred in suites query");
+    for row in case_rows {
         let id: i64 = row.get("id");
         let parent_id = row.get("parent_id");
         let suite = TestSuite {
-            id: id,
-            parent_id: parent_id,
+            id,
+            parent_id,
             title: row.get("title"),
             children: vec![],
             parent: None,
@@ -108,9 +108,14 @@ pub fn cases_search(query_params: CaseSearchQueryParams) -> PyResult<String> {
     {
         let suite_id: i64 = row.get("suite_id");
         if let Some(node) = suite_map.get(&suite_id) {
+            let mut labels = vec![];
+            if let Some(labels_from_db) = row.get("labels") {
+                labels = labels_from_db
+            }
             node.borrow_mut().object.test_cases.push(TestCase {
                 id: row.get("id"),
                 name: row.get("name"),
+                labels,
                 suite_id,
             })
         }
@@ -136,5 +141,6 @@ pub fn cases_search(query_params: CaseSearchQueryParams) -> PyResult<String> {
     for elem in root_refs {
         res.push(elem.into_suite());
     }
-    Ok(serde_json::to_string(&res).unwrap())
+    let json = serde_json::to_string(&res).expect("Error during JSON serialization");
+    Ok(json)
 }
